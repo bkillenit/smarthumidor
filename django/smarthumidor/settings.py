@@ -42,7 +42,8 @@ THIRD_PARTY_APPS = ()
 
 LOCAL_APPS = (
     'rest_framework',
-    'jquery'
+    'jquery',
+    'httplib2'
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
