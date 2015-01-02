@@ -3,7 +3,7 @@
 This project is an embedded system that maintains user defined humidity level in a humidor and communicates temperature and humidity levels to a web app. It uses the Arduino platform as the microcontroller and talks to a Django web application. Included are code for both pieces of software with electronic and physical schematics on the way.
 
 ##### Major project contributors are:
-Blaine Killen- Idea guy and software/ electrical engineer.
+Blaine Killen- Idea guy and software/ electrical engineer.  
 Eric Atcheson- Awesome mechanical engineer in his last year at University of Houston.
 
 ## Motivation
