@@ -19,19 +19,18 @@ A few steps need to be followed after a standard fork or pull to get up and runn
 
 1. locate the project's root folder
 2. move all the files in the humidor directory to your local Arduino sketchbook folder
-* Normally this is found at "~/Documents/Arduino"
+  * Normally this is found at "~/Documents/Arduino"
 3. go to the humidor folder within your Arduino sketchbook and move the DHT folder to the libraries folder within your sketchbook
-* restart the Arduino IDE if it was running during this step
+  * restart the Arduino IDE if it was running during this step
 4. change the mac address assigned programatically assigned to the device to the mac address specified on whatever shield you are using to enable internet communication.
-* this is located on line 16 of the humidor.ino file
-* you might have to change the ip address assigned to the device as well if there are address conflicts. This is located on line 17 of the humidor.ino file
+  * this is located on line 16 of the humidor.ino file
+  * you might have to change the ip address assigned to the device as well if there are address conflicts. This is located on line 17 of the humidor.ino file
 5. connect your arduino and upload the humidor.ino file from the Arduino IDE to the platform
-
 
 #### Django Application Setup
 1. go back to the project's root folder containing just the django folder
 2. switch in to the django folder
-* (Optional) wrap a python virtual environment around the project root using virtualenv
+  * (Optional) wrap a python virtual environment around the project root using virtualenv
 3. install all of the required packages for the project. ie. pip install -r "requirements.txt"
 4. start the web server using django-admin.py runserver
 
