@@ -2,7 +2,7 @@
 
 This project is an embedded system that maintains user defined humidity level in a humidor and communicates temperature and humidity levels to a web app. It uses the Arduino platform as the microcontroller and talks to a Django web application. Included are code for both pieces of software with electronic and physical schematics on the way.
 
-##### Major project contributors are:
+#### Major project contributors are:
 Blaine Killen- Idea guy and software/ electrical engineer.  
 Eric Atcheson- Awesome mechanical engineer in his last year at University of Houston.
 
@@ -14,7 +14,7 @@ We love cigars. We thought that it would be cool to integrate web technology in 
 
 A few steps need to be followed after a standard fork or pull to get up and running. To setup the Arduino portion of the project, you must have the Arduino base board and any of the shields that allow you to connect to the internet along with an active internet connection. You must also wire the other components as outlined in the electrical schematics file. (coming soon)
 
-##### Arduino Setup
+#### Arduino Setup
 **Note:** You may skip steps 2 and 3 if you change the sketchbook location of your Arduino IDE to the humidor subdirectory of the repo 
 
 1. locate the project's root folder
@@ -28,7 +28,7 @@ A few steps need to be followed after a standard fork or pull to get up and runn
 5. connect your arduino and upload the humidor.ino file from the Arduino IDE to the platform
 
 
-##### Django Application Setup
+#### Django Application Setup
 1. go back to the project's root folder containing just the django folder
 2. switch in to the django folder
 * (Optional) wrap a python virtual environment around the project root using virtualenv
