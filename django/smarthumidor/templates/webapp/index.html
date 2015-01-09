@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="{{ STATIC_URL }}js/jquery.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+    $.ajax({
+        "type": "GET",
+        "dataType": "json",
+        "url": "10.0.0.3",
+        "data": data,
+        "success": function(result) {
+            console.log(result);
+        },
+    });
+});
+</script>
+</head>
+<body>
+    <h1>Have we made it?</h1>
+</body>
+</html>
