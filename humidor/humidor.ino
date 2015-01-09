@@ -12,7 +12,7 @@ int degreesRotation = 22; //sets the initial degrees of rotation for the servo t
 int delayHumiditySensor;
 
 // these are test values that will be dynamically set from the web in later versions
-float desiredHumidity = 40;
+float desiredHumidity = 72;
 const int humidityTolerance = 5;
 
 float hi;
@@ -46,28 +46,39 @@ DHT dht(DHTPIN, DHTTYPE);
 // index structure of the array is: [0] = tempC, [1] = tempF, [2] = humidityLevel, [3] = heat index
 float weatherData[4] = {};
 
+// variable to track the pwm amount written to the pump pin. keeps from 
+// continuously writing the same pwm value to the pin in the loop method
+// when adjusting the humidity in the box. initialized to the lowVoltage value
+int currPumpVoltage = lowVoltage;
+
 void setup() {
   Serial.begin(9600);
-    
-  // start the Ethernet connection:
-//  if (Ethernet.begin(mac) == 0) {
-//    Serial.println("Failed to configure Ethernet using DHCP");
-//    // no point in carrying on, so do nothing forevermore:
-//    for(;;)
-//      ;
-//  }
-//  
-//  // print your local IP address:
-//  Serial.print("My IP address: ");
-//  for (byte thisByte = 0; thisByte < 4; thisByte++) {
-//    // print the value of each byte of the IP address:
-//    Serial.print(Ethernet.localIP()[thisByte], DEC);
-//    Serial.print("."); 
-//  }
-//  Serial.println();
+  
+  Serial.begin(9600);
+  pinMode(SDCARD_CS,OUTPUT);
+  
+  // deselect the SD card, required for the pins from the ethernet shield to 
+  // communicate properly with base board in the absence of an SD card
+  digitalWrite(SDCARD_CS,HIGH);
+  
+  // start the Ethernet connection and ensure that the Arduino correctly obtains
+  // and IP address. If not, skip setting up the server and move on to the 
+  // rest of the setup for pin initialization
+  if (Ethernet.begin(mac) == 0) {
+    Serial.println("Failed to configure Ethernet using DHCP");
+  }
   
   // start to listen for clients once the web server is running and configured
-//  server.begin();   
+  server.begin(); 
+  
+  // print your local IP address:
+  Serial.print("My IP address: ");
+  for (byte thisByte = 0; thisByte < 4; thisByte++) {
+    // print the value of each byte of the IP address:
+    Serial.print(Ethernet.localIP()[thisByte], DEC);
+    Serial.print(".");
+  } 
+  
   
   delayHumiditySensor++;
   
@@ -77,7 +88,6 @@ void setup() {
   pinMode(pumpPin, OUTPUT);
   analogWrite(pumpPin, lowVoltage);
   
-  Serial.println("DHTxx test!");
   dht.begin();
 } 
  
@@ -97,69 +107,88 @@ void loop() {
   
   // if the current humidity is less than the desired humidity accounting for tolerance,
   // switch the motor pump's voltage to high resulting in higher air flow rate
+  // add conditional for handling breaking of the while loop after certain time
+  // consider running this concurrently ( if there is a way )  
   if( currentHumidity < (desiredHumidity - humidityTolerance) ) {
-      analogWrite(pumpPin, highVoltage);
-      while(currentHumidity != (desiredHumidity + humidityTolerance)) {
-          ;
+      if( currPumpVoltage == lowVoltage) {
+        analogWrite(pumpPin, highVoltage);
+        currPumpVoltage = highVoltage;
       }
-      analogWrite(pumpPin, lowVoltage);
+  } else if( currentHumidity >= (desiredHumidity + humidityTolerance) ) {
+     if( currPumpVoltage == highVoltage) {
+        analogWrite(pumpPin, lowVoltage);
+        currPumpVoltage = lowVoltage;
+      }
   }
         
-//  // listen for incoming clients
-//  EthernetClient client = server.available();
-//  if (client) {
-//    // an http request ends with a blank line
-//    boolean currentLineIsBlank = true;
-//    while (client.connected()) {
-//      if (client.available()) {
-//        char c = client.read();
-//        // if you've gotten to the end of the line (received a newline
-//        // character) and the line is blank, the http request has ended,
-//        // so you can send a reply
-//        if (c == '\n' && currentLineIsBlank) {
-//          // send a standard http response header
-//          client.println("HTTP/1.1 200 OK");
-//          client.println("Content-Type: application/json");
-//          client.println();
-//          
-//          client.println("<html><p>Hello World!</p></html>");  
-//          
-//          // constructing a blank array and passing in a pointer to the first address to the readWeatherData method
-//          float weatherData[4] = {};
-//          readWeatherData( weatherData );
+ // listen for incoming clients
+  EthernetClient client = server.available();
+  if (client) {
+    // an http request ends with a blank line
+    boolean currentLineIsBlank = true;
+    while (client.connected()) {
+      if (client.available()) {
+        char c = client.read();
+        Serial.write(c);
+
+        // if you've gotten to the end of the line (received a newline
+        // character) and the line is blank, the http request has ended,
+        // so you can send a reply
+        if (c == '\n' && currentLineIsBlank) {
+          // send a standard http response header
+          client.println("HTTP/1.1 200 OK");
+          client.println("Content-Type: text/html");
+          client.println("Connnection: close");
+          client.println();
+                  
+          client.println("<!DOCTYPE HTML> <html><p>Hello World!</p><p>Temperature C is ");
+          client.println(weatherData[0]);
+          client.println("</p>");
+          client.println("<p>Temperature F is ");
+          client.println(weatherData[1]);
+          client.println("</p>");
+          client.println("<p>Humidity is ");
+          client.println(weatherData[2]);
+          client.println("</p>");
+          client.println("<p>Heat Index is ");
+          client.println(weatherData[3]);
+          client.println("</p></html>");
+          
+
 //          
 //          while(weatherData == NULL) {
 //            readWeatherData( weatherData );          
 //          }
-//          
-//          // respond to the JSON request using JSON-P extension
-////          client.println("{'weather': { 'temp': ");
-////          client.println(weatherData[0]);
-////          client.println(", tempf: ");
-////          client.println(weatherData[1]);
-////          client.println(", humidity: ");
-////          client.println(weatherData[2]);
-////          client.println(", heatindex: ");
-////          client.println(weatherData[3]);
-////          client.println("} }");
-//          
-//          break;
-//        }
-//        if (c == '\n') {
-//          // you're starting a new line
-//          currentLineIsBlank = true;
-//        } 
-//        else if (c != '\r') {
-//          // you've gotten a character on the current line
-//          currentLineIsBlank = false;
-//        }
-//      }
-//    }
-//    // give the web browser time to receive the data
-//    delay(1);
-//    // close the connection:
-//    client.stop();
-//  }
+          
+          // respond to the JSON request using JSON-P extension
+//          client.println("{'weather': { 'temp': ");
+//          client.println(weatherData[0]);
+//          client.println(", tempf: ");
+//          client.println(weatherData[1]);
+//          client.println(", humidity: ");
+//          client.println(weatherData[2]);
+//          client.println(", heatindex: ");
+//          client.println(weatherData[3]);
+//          client.println("} }");
+          
+          break;
+        }
+        if (c == '\n') {
+          // you're starting a new line
+          currentLineIsBlank = true;
+        } 
+        else if (c != '\r') {
+          // you've gotten a character on the current line
+          currentLineIsBlank = false;
+        }
+      }
+    }
+    // give the web browser time to receive the data
+    delay(1);
+    // close the connection:
+    client.stop();
+    Serial.println("client disonnected");
+  }
 } 
 
 void closeLid() {
@@ -193,7 +222,7 @@ void readWeatherData(float *answer) {
 
   // Check if any reads failed and exit early (to try again).
   if (isnan(answer[0]) || isnan(answer[1]) || isnan(answer[2])) {
-    Serial.println("Failed to read from DHT sensor!");
+    return;
   }
 
   // Compute heat index
