@@ -3,20 +3,29 @@
 <head>
 <script src="{{ STATIC_URL }}js/jquery.js"></script>
 <script type="text/javascript">
-$(document).ready(function() {
     $.ajax({
-        "type": "GET",
-        "dataType": "json",
-        "url": "10.0.0.3",
-        "data": data,
-        "success": function(result) {
-            console.log(result);
-        },
-    });
-});
+  		url: "http://192.168.2.55",
+  		dataType: "jsonp",
+  		type: "GET",
+  		cache: true,
+  		jsonp: false,
+  		jsonpCallback: "ArduinoWeatherDataCallback",
+  		success: function( result ) {
+        	weather = result.weather;
+        	
+        	$('#tempCelc').text(Math.floor(weather.temperature.celcius));
+        	$('#tempFahr').text(Math.floor(weather.temperature.fahrenheit));
+        	$('#hInd').text(Math.floor(weather.temperature.heatIndex));
+        	$('#humPerc').text(Math.ceil(weather.humidity) + "%");
+    	},
+	});
 </script>
 </head>
 <body>
     <h1>Have we made it?</h1>
+    <p>Temp Celsius: <span id="tempCelc"></span></p>
+    <p>Temp Fahrenheit: <span id="tempFahr"></span></p>
+    <p>Humidity: <span id="humPerc"></span></p>
+    <p>Heat Index: <span id="hInd"></span></p>
 </body>
 </html>

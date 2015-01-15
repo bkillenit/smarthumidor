@@ -41,11 +41,12 @@ DEFAULT_APPS = (
 THIRD_PARTY_APPS = (
     'rest_framework',
     'jquery',
-    'httplib2'
+    'httplib2',
+    'webapp'
 )
 
 LOCAL_APPS = (
-    'webapp'
+    
 )
 
 INSTALLED_APPS = DEFAULT_APPS + THIRD_PARTY_APPS + LOCAL_APPS
@@ -88,8 +89,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Template directory, tells app where the HTML templating files are located
+# https://docs.djangoproject.com/en/1.7/intro/tutorial03/
+TEMPLATE_DIRS = [os.path.join(BASE_DIR, 'templates')]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
-
 STATIC_URL = '/static/'

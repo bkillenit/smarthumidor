@@ -11,4 +11,4 @@ def index(request):
 	resp, content = h.request("http://example.org/", "GET")
 	template = loader.get_template('webapp/index.html')
 
-    return render(request, 'webapp/index.html')
+	return render(request, 'webapp/index.html')
